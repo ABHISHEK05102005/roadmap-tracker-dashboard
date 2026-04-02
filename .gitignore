@@ -1,0 +1,9 @@
+node_modules/
+dist/
+client/dist/
+*.log
+.env
+.env.*
+!.env.example
+server/data/progress.json
+.vercel

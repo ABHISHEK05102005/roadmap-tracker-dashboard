@@ -1,5 +1,3 @@
-import path from "node:path";
-import { readJson, writeJsonAtomic } from "./jsonStore.js";
 import { isoToDayNumber, todayISO } from "./date.js";
 
 const STATUS_DONE = "done";
@@ -111,26 +109,21 @@ function dayNumberToISO(dayNumber) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export async function loadProgress(progressFilePath) {
-  const raw = await readJson(progressFilePath, {});
-  return normalizeProgress(raw);
+/** @param {unknown} raw */
+export function loadProgressFromRaw(raw) {
+  const obj = raw && typeof raw === "object" ? raw : {};
+  return normalizeProgress(obj);
 }
 
-export async function saveProgress(progressFilePath, progress) {
-  await writeJsonAtomic(progressFilePath, progress);
-}
-
-export async function markComplete({ progressFilePath, progress, taskId, dateIso }) {
+export function applyComplete(progress, taskId, dateIso) {
   const next = { ...progress };
   next[taskId] = { status: STATUS_DONE, date: dateIso ?? todayISO() };
-  await saveProgress(progressFilePath, next);
   return next;
 }
 
-export async function markUncomplete({ progressFilePath, progress, taskId }) {
+export function applyUncomplete(progress, taskId) {
   const next = { ...progress };
   next[taskId] = { status: STATUS_TODO, date: null };
-  await saveProgress(progressFilePath, next);
   return next;
 }
 
