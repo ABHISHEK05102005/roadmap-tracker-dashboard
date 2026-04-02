@@ -27,13 +27,15 @@ The Vite dev server proxies `/api/*` to the Express server.
 This repo is set up as a **static Vite frontend** plus **serverless API** routes.
 
 1. Push the project to GitHub and import it in [Vercel](https://vercel.com).
-2. Use the defaults Vercel reads from `vercel.json`:
+2. **Root directory:** leave blank (repository root). Do **not** set it to `client`, or `api/` and the workspace `npm run build` will not work as intended.
+3. **Do not use legacy `builds` in `vercel.json`.** If that key exists, Vercel ignores your Project’s Build & Development settings and shows a warning; it also often causes broken builds (for example exit code `126`). Delete the entire `builds` array and rely on `installCommand`, `buildCommand`, and `outputDirectory` in `vercel.json` (or only in the dashboard — not both conflicting).
+4. Use the defaults Vercel reads from `vercel.json`:
    - **Build command:** `npm run build`
    - **Output directory:** `client/dist`
    - **Install command:** `npm install`
-3. **Persistence (required for real usage):** add **Redis (Upstash)** from the [Vercel Marketplace](https://vercel.com/marketplace) and connect it to the project. Vercel injects `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+5. **Persistence (required for real usage):** add **Redis (Upstash)** from the [Vercel Marketplace](https://vercel.com/marketplace) and connect it to the project. Vercel injects `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
    - Without Redis on Vercel, the app runs with an **in-memory store** (progress resets when a new serverless instance starts).
-4. Deploy. Open your production URL; the client calls `/api/...`, which is handled by `api/[...slug].js`.
+6. Deploy. Open your production URL; the client calls `/api/...`, which is handled by `api/[...slug].js`.
 
 See `.env.example` for variable names.
 
