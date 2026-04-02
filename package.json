@@ -8,8 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
-    "build": "npm run build --workspace client",
-    "postinstall": "chmod +x client/node_modules/.bin/vite || true",
+    "build": "npm run build --workspace roadmap-tracker-client",
     "start": "node server/index.js"
   },
   "devDependencies": {
