@@ -6,11 +6,11 @@
     "client",
     "server"
   ],
-  "scripts": {
-    "dev": "concurrently -n server,client -c blue,green \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
-    "build": "npm install --prefix client && npm run build --prefix client",
-    "start": "node server/index.js"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
+},
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
