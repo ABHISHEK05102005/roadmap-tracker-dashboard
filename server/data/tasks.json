@@ -1,0 +1,37 @@
+[
+  {
+    "id": "t-001",
+    "index": 1,
+    "title": "Set up dashboard layout",
+    "category": "UI",
+    "type": "Feature"
+  },
+  {
+    "id": "t-002",
+    "index": 2,
+    "title": "Implement tasks filtering + sorting",
+    "category": "Tasks",
+    "type": "Feature"
+  },
+  {
+    "id": "t-003",
+    "index": 3,
+    "title": "Add streak + stats endpoint",
+    "category": "Backend",
+    "type": "Feature"
+  },
+  {
+    "id": "t-004",
+    "index": 4,
+    "title": "Add progress charts",
+    "category": "Analytics",
+    "type": "Feature"
+  },
+  {
+    "id": "t-005",
+    "index": 5,
+    "title": "Polish task cards UI",
+    "category": "UI",
+    "type": "Enhancement"
+  }
+]
