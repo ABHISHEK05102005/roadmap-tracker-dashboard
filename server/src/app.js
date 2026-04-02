@@ -16,11 +16,23 @@ export function buildApp({ store }) {
   app.use(cors());
   app.use(express.json({ limit: "1mb" }));
 
-  app.get("/health", (req, res) => res.json({ ok: true }));
-
-  app.get("/tasks", async (_req, res) => {
+  let seedPromise;
+  app.use(async (_req, _res, next) => {
+    if (!seedPromise) seedPromise = store.ensureSeed();
     try {
-      await store.ensureSeed();
+      await seedPromise;
+      next();
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  const api = express.Router();
+
+  api.get("/health", (_req, res) => res.json({ ok: true }));
+
+  api.get("/tasks", async (_req, res) => {
+    try {
       const tasks = await store.getTasks();
       const progressRaw = await store.getProgressRaw();
       const progress = loadProgressFromRaw(progressRaw);
@@ -34,12 +46,11 @@ export function buildApp({ store }) {
     }
   });
 
-  app.post("/complete", async (req, res) => {
+  api.post("/complete", async (req, res) => {
     try {
       const { taskId } = req.body ?? {};
       if (!taskId) return res.status(400).json({ error: "taskId is required" });
 
-      await store.ensureSeed();
       const tasks = await store.getTasks();
       const exists = tasks.some((t) => t.id === taskId);
       if (!exists) return res.status(404).json({ error: "Task not found" });
@@ -55,12 +66,11 @@ export function buildApp({ store }) {
     }
   });
 
-  app.post("/uncomplete", async (req, res) => {
+  api.post("/uncomplete", async (req, res) => {
     try {
       const { taskId } = req.body ?? {};
       if (!taskId) return res.status(400).json({ error: "taskId is required" });
 
-      await store.ensureSeed();
       const tasks = await store.getTasks();
       const exists = tasks.some((t) => t.id === taskId);
       if (!exists) return res.status(404).json({ error: "Task not found" });
@@ -75,9 +85,8 @@ export function buildApp({ store }) {
     }
   });
 
-  app.get("/stats", async (_req, res) => {
+  api.get("/stats", async (_req, res) => {
     try {
-      await store.ensureSeed();
       const tasks = await store.getTasks();
       const progress = loadProgressFromRaw(await store.getProgressRaw());
       const stats = computeStats({ tasks, progress });
@@ -87,10 +96,9 @@ export function buildApp({ store }) {
     }
   });
 
-  app.get("/charts/progress", async (req, res) => {
+  api.get("/charts/progress", async (req, res) => {
     try {
       const days = Math.max(7, Math.min(90, Number(req.query.days ?? 14)));
-      await store.ensureSeed();
       const tasks = await store.getTasks();
       const progress = loadProgressFromRaw(await store.getProgressRaw());
       const series = computeProgressOverTime({ tasks, progress, days });
@@ -100,11 +108,13 @@ export function buildApp({ store }) {
     }
   });
 
+  app.use("/api", api);
+
   return app;
 }
 
-export async function createApp() {
+/** Synchronous factory so Vercel can `export default createApp()` from `src/index.js`. */
+export function createApp() {
   const store = createStore();
-  await store.ensureSeed();
   return buildApp({ store });
 }

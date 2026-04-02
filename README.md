@@ -35,7 +35,7 @@ This repo is set up as a **static Vite frontend** plus **serverless API** routes
    - **Install command:** `npm install`
 5. **Persistence (required for real usage):** add **Redis (Upstash)** from the [Vercel Marketplace](https://vercel.com/marketplace) and connect it to the project. Vercel injects `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
    - Without Redis on Vercel, the app runs with an **in-memory store** (progress resets when a new serverless instance starts).
-6. Deploy. Open your production URL; the client calls `/api/...`, which is handled by `api/[...slug].js`.
+6. Deploy. Open your production URL; the client calls `/api/...`, which is handled by the **Express app** Vercel picks up from `src/index.js` (default export).
 
 See `.env.example` for variable names.
 
@@ -43,4 +43,4 @@ See `.env.example` for variable names.
 
 - `server/`: Express API and storage layer (`server/data/` JSON on disk locally)
 - `client/`: React (Vite), CSS Modules, Chart.js
-- `api/[...slug].js`: Vercel Serverless entry (wraps the same Express app via `serverless-http`)
+- `src/index.js`: Vercel Express entry (default export; same routes as local server under `/api/...`)
